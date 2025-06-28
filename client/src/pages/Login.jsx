@@ -33,7 +33,7 @@ const Login = () => {
 
       // const userDetails = await GetUserDetails();
       // console.log("User Details:", userDetails);
-      // dispatch(settUserDetails(userDetails));
+       dispatch(settUserDetails(response.data.data.user));
 
       toast.success(response?.data?.message || "Login successful.");
       navigate("/");

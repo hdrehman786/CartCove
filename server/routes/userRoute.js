@@ -17,7 +17,7 @@ userRouter.put('/forgotpassword', forgotPassword);
 userRouter.post('/verifyotp', verifyOtp);
 userRouter.put('/resetpassword', resetPassword);
 userRouter.post('/refreshtoken', refreshToken);
-userRouter.get('/getuserdetails',getUserDetails)
+userRouter.get('/getuserdetails',auth,getUserDetails)
 
 export default userRouter;
 
