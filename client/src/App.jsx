@@ -45,7 +45,7 @@ const App = () => {
 
 
   useEffect(() => {
-    fetchUser();
+    // fetchUser();
     fetchCategory();
     fetchSubCategory();
   }, []);
