@@ -1,6 +1,6 @@
 
 
-export const baseUrl = 'http://localhost:3000';
+export const baseUrl = 'https://cart-cove-server.vercel.app/';
 
 
 const SummaryApi = {
