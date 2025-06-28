@@ -477,8 +477,17 @@ export const refreshToken = async (req, res) => {
 
 export const getUserDetails = async(req,res)=>{
   try {
-    const  id  = req.id;
-    console.log(id);
+     const token = req.cookies.accesstoken;
+     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) {
+      return res.status(401).json({
+        message: "Unauthorized access - Invalid token",
+        error: true,
+        success: false,
+      })
+    }
+    const { id } = decoded;
+
     const user = await UserModel.findById(id).select(' -password -refresh_token -accesstoken');
     if (!user) {
       return res.status(404).json({
