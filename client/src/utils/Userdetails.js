@@ -8,8 +8,6 @@ try {
       withCredentials: true,  // Ensure cookies are sent with the request
     })
 
-    console.log("User Details Response:", response.data)
-
     return  response.data.user
 } catch (error) {
   console.log(error.response.data);  // Check what error is being return

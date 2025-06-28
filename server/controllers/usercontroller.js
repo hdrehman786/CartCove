@@ -477,7 +477,7 @@ export const refreshToken = async (req, res) => {
 
 export const getUserDetails = async(req,res)=>{
   try {
-     const token = req.cookies.accesstoken;
+     const token =localStorage.getItem("accesstoken");
      const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded) {
       return res.status(401).json({
