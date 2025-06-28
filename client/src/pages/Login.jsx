@@ -32,6 +32,7 @@ const Login = () => {
       localStorage.setItem("refreshtoken", response.data.data.refreshtoken);
 
       const userDetails = await GetUserDetails();
+      console.log("User Details:", userDetails);
       dispatch(settUserDetails(userDetails));
 
       toast.success(response?.data?.message || "Login successful.");
