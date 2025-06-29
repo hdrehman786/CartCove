@@ -23,7 +23,7 @@ dotenv.config();
 connectDB();
 
 // Frontend origin for CORS
-const FRONTEND = 'https://cart-cove-e-comerace.vercel.app';
+const FRONTEND ='https://cart-cove-e-comerace.vercel.app/';
 
 const app = express();
 
