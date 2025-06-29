@@ -477,38 +477,63 @@ export const refreshToken = async (req, res) => {
 
 // get the user login details
 
-export const getUserDetails = async (req, res) => {
+exports.getUserDetails = async (req, res) => {
   try {
-    const token = localStorage.getItem("accesstoken");
+    // 1. Read token from httpOnly cookie
+    const token = req.cookies?.accesstoken;
+    if (!token) {
+      return res.status(401).json({
+        message: "No token provided",
+        error: true,
+        success: false,
+      });
+    }
+
+    // 2. Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded) {
       return res.status(401).json({
-        message: "Unauthorized access - Invalid token",
+        message: "Unauthorized access – invalid token",
         error: true,
         success: false,
-      })
+      });
     }
-    const { id } = decoded;
 
-    const user = await UserModel.findById(id).select(' -password -refresh_token -accesstoken');
+    // 3. Extract the ID (make sure this matches your sign() payload)
+    const userId = decoded.userId || decoded.id;
+    if (!userId) {
+      return res.status(400).json({
+        message: "Token payload malformed",
+        error: true,
+        success: false,
+      });
+    }
+
+    // 4. Fetch user, excluding sensitive fields
+    const user = await UserModel.findById(userId)
+      .select("-password -refresh_token -accesstoken");
     if (!user) {
       return res.status(404).json({
         message: "User not found",
         error: true,
         success: false,
-      })
+      });
     }
+
+    // 5. Return consistent success payload
     return res.status(200).json({
       message: "User details retrieved successfully",
-      user,
+      error: false,
       success: true,
-    })
-
-  } catch (error) {
-    res.status(400).json({
-      message: error.message || "Invalid request",
+      data: user,
+    });
+  } catch (err) {
+    // Use 500 for server errors (DB, etc.) and 400 for JWT errors
+    const status = err.name === "JsonWebTokenError" ? 401 : 500;
+    return res.status(status).json({
+      message: err.message || "Server error",
       error: true,
-      success: false
-    })
+      success: false,
+    });
   }
-}
+};
