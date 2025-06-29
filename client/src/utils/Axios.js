@@ -1,7 +1,7 @@
 // src/utils/axiosInstance.js
 import axios from "axios";
 
-export const baseUrl = "https://cart-cove-server.vercel.app";
+export const baseUrl = "https://server-cart-cove.vercel.app";
 
 // const axiosInstance = axios.create({
 //   baseURL: baseUrl,

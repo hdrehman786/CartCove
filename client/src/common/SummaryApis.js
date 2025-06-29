@@ -1,6 +1,6 @@
 
 
-export const baseUrl = 'https://cart-cove-server.vercel.app';
+export const baseUrl = 'https://server-cart-cove.vercel.app';
 
 
 const SummaryApi = {
