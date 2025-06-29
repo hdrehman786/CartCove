@@ -33,7 +33,7 @@ app.use(cors({
   credentials: true,
   methods: ['GET','POST','PUT','DELETE','OPTIONS']
 }));
-app.options('*', cors({ origin: FRONTEND, credentials: true }));
+app.options('*', cors({ origin:FRONTEND, credentials: true }));
 
 // 2. Body parsing and cookies
 app.use(express.json());
