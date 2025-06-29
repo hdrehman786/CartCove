@@ -13,16 +13,17 @@ import SummaryApi from './common/SummaryApis.js';
 import { BsCart4 } from "react-icons/bs";
 const App = () => {
   const dispatch = useDispatch();
-  // const fetchUser = async () => {
-  //   const user = await GetUserDetails();
-  //   dispatch(settUserDetails(user));
-  // }
+  const fetchUser = async () => {
+    const user = await GetUserDetails();
+    dispatch(settUserDetails(user));
+  }
 
   const fetchCategory = async () => {
     try {
       const response = await axiosInstance({
         ...SummaryApi.getCategories
       });
+      console.log(response);
       const { data: responsedata } = response;
       dispatch(setAllCategory(responsedata.data))
     } catch (error) {
