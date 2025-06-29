@@ -477,7 +477,7 @@ export const refreshToken = async (req, res) => {
 
 // get the user login details
 
-exports.getUserDetails = async (req, res) => {
+export const getUserDetails = async (req, res) => {
   try {
     // 1. Read token from httpOnly cookie
     const token = req.cookies?.accesstoken;
