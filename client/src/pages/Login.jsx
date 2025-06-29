@@ -3,10 +3,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { baseUrl } from "../utils/Axios";
 import GetUserDetails from "../utils/Userdetails";
 import { useDispatch } from "react-redux";
 import { settUserDetails } from "../store/userSlice";
+
+// Ensure Axios sends cookies by default
+axios.defaults.withCredentials = true;
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -25,17 +27,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${baseUrl}/auth/login`, credentials, {
-        withCredentials: true,
-      });
-      localStorage.setItem("accesstoken", response.data.data.accesstoken);
-      localStorage.setItem("refreshtoken", response.data.data.refreshtoken);
+      // Send credentials; cookies will be set by server
+      const { data } = await axios.post(
+        "/auth/login",
+        credentials
+      );
 
-      // const userDetails = await GetUserDetails();
-      // console.log("User Details:", userDetails);
-       dispatch(settUserDetails(response.data.data.user));
+      // Fetch and store user details from cookie-authenticated endpoint
+      const userDetails = await GetUserDetails();
+      dispatch(settUserDetails(userDetails));
 
-      toast.success(response?.data?.message || "Login successful.");
+      toast.success(data.message || "Login successful.");
       navigate("/");
     } catch (error) {
       toast.error(
@@ -115,7 +117,7 @@ const Login = () => {
         </form>
 
         <p className="mt-6 text-center text-gray-200 text-sm">
-          Don’t have an account?{" "}
+          Don’t have an account?{' '}
           <Link
             to="/register"
             className="text-yellow-400 font-semibold hover:underline"
