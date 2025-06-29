@@ -6,6 +6,7 @@ import axios from "axios";
 import GetUserDetails from "../utils/Userdetails";
 import { useDispatch } from "react-redux";
 import { settUserDetails } from "../store/userSlice";
+import { baseUrl } from "../utils/Axios";
 
 // Ensure Axios sends cookies by default
 axios.defaults.withCredentials = true;
@@ -29,7 +30,7 @@ const Login = () => {
     try {
       // Send credentials; cookies will be set by server
       const { data } = await axios.post(
-        "/auth/login",
+        `${baseUrl}/auth/login`,
         credentials
       );
 
