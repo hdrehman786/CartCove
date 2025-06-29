@@ -7,8 +7,8 @@ try {
     const response = await axios.get(`${baseUrl}/auth/getuserdetails`, {
       withCredentials: true,  // Ensure cookies are sent with the request
     })
-
-    return  response.data.user
+    console.log("User Details Response:", response.data);
+    return  response.data.data
 } catch (error) {
   console.log(error.response.data);  // Check what error is being return
 }

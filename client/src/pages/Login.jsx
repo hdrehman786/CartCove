@@ -25,7 +25,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${baseUrl}/auth/login`, credentials, {
+      const response = await axios.post(`${baseUrl}/auth/login`,{
         withCredentials: true,
       });
       localStorage.setItem("accesstoken", response.data.data.accesstoken);
