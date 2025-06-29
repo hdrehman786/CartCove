@@ -34,7 +34,11 @@ const Login = () => {
         credentials
       );
 
-      // Fetch and store user details from cookie-authenticated endpoint
+      if (data.error) {
+        toast.error(data.error);
+        setLoading(false);
+        return;
+        }
       const userDetails = await GetUserDetails();
       dispatch(settUserDetails(userDetails));
 
