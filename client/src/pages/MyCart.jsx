@@ -45,9 +45,7 @@ const MyCart = () => {
         fetchProductFromCart();
     }, [userId]);
 
-    // FIX: This function now uses a dedicated endpoint for updating quantity.
     const handleUpdateQuantity = async (cartItemId, newQuantity) => {
-        // If user tries to decrease quantity below 1, remove the item instead.
         if (newQuantity < 1) {
             handleRemoveItem(cartItemId);
             return;
@@ -57,20 +55,17 @@ const MyCart = () => {
             const response = await axios({
                 ...SummaryApi.updateCartQuantity,
             data : {
-                cartItemId: cartItemId,   // The ID of the document in the Cart collection
+                cartItemId: cartItemId,
                 newQuantity: newQuantity,
-             } // The new total quantity
+             }
             });
 
             if (response.data.success) {
-                // Optimistically update the UI for a snappy user experience
                 setCartItems(prevItems =>
                     prevItems.map(item =>
                         item._id === cartItemId ? { ...item, quantity: newQuantity } : item
                     )
                 );
-                // Optional: Show a success toast, but can be annoying on every click.
-                // toast.success("Quantity updated!");
             }
         } catch (error) {
             toast.error(error?.response?.data?.message || "Failed to update quantity");
@@ -78,10 +73,7 @@ const MyCart = () => {
     };
 
     const handleRemoveItem = async (cartItemId) => {
-          console.log("prouctId",cartItemId),
-            console.log("userId",userId)
         try {
-          
             const response = await axios({
                 ...SummaryApi.removeCartQuantity,
                 data : {
@@ -90,7 +82,6 @@ const MyCart = () => {
                 }
         })
             if (response.data.success) {
-                // Update state locally to remove the item instantly from the UI
                 setCartItems(prevItems => prevItems.filter(item => item._id !== cartItemId));
                 toast.success(response.data.message || "Item removed from cart.");
             }
@@ -99,7 +90,6 @@ const MyCart = () => {
         }
     };
 
-    // Calculate totals using useMemo for performance
     const { grandTotal, totalDiscount } = useMemo(() => {
         let subtotal = 0;
         let originalTotal = 0;
@@ -121,88 +111,101 @@ const MyCart = () => {
         };
     }, [cartItems]);
 
-    // --- RENDER LOGIC ---
-
     if (loading) {
-        return <div className="flex justify-center items-center h-full p-10"><p className="text-lg text-gray-500">Loading your cart...</p></div>;
+        return <div className="flex justify-center items-center h-screen"><p className="text-lg text-gray-500">Loading your cart...</p></div>;
     }
 
     if (!loading && cartItems.length === 0) {
         return (
-            <div className="text-center p-10">
-                <h2 className="text-2xl font-semibold mb-4">Your Cart is Empty</h2>
-                <p className="text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+            <div className="flex flex-col items-center justify-center h-screen text-center p-4">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-800">Your Cart is Empty</h2>
+                <p className="text-gray-500 mb-6">Looks like you haven't added anything yet.</p>
+                <button onClick={() => navigate('/')} className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
+                    Start Shopping
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto p-4 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">My Shopping Cart</h1>
+        <div className="bg-gray-50 min-h-screen">
+            <div className="container mx-auto p-2 sm:p-4">
+                <h1 className="text-2xl md:text-3xl font-bold my-4 md:my-6 text-center text-gray-800">Shopping Cart</h1>
 
-            <div className="flex flex-col lg:flex-row gap-8">
-                {/* Left Side: Cart Items */}
-                <div className="w-full lg:w-2/3">
-                    <div className="flex flex-col gap-4">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Left Side: Cart Items */}
+                    <div className="w-full lg:w-2/3 space-y-3">
                         {cartItems.map((item) => {
                             const originalPrice = item.productId?.price || 0;
                             const discount = item.productId?.discount || 0;
                             const discountedPrice = calculateDiscountedPrice(originalPrice, discount);
 
                             return (
-                                <div key={item._id} className="flex items-center bg-white p-4 rounded-lg shadow-md gap-4">
-                                    <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                <div key={item._id} className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border flex items-center gap-4">
+                                    {/* Image Container (Fixed size) */}
+                                    <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                                         <img src={item.productId?.images[0]} alt={item.productId?.name} className="w-full h-full object-cover"/>
                                     </div>
-                                    <div className="flex-grow">
-                                        <h3 className="text-lg font-semibold">{item.productId?.name}</h3>
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-green-600 font-bold text-lg">${discountedPrice.toFixed(2)}</p>
-                                            {discount > 0 && (<p className="text-gray-500 line-through text-sm">${originalPrice.toFixed(2)}</p>)}
+                                    
+                                    {/* Details Container */}
+                                    <div className="flex-grow flex flex-col gap-1">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="text-sm sm:text-base font-semibold text-gray-800 line-clamp-2 pr-2">
+                                                {item.productId?.name}
+                                            </h3>
+                                            <button onClick={() => handleRemoveItem(item._id)} className="text-gray-500 hover:text-red-600  cursor-pointer flex-shrink-0">
+                                                <FaTrashAlt size={16} />
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {/* FIX: The onClick now correctly passes the cart item's ID (_id) */}
-                                        <button onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)} className="w-8 h-8 bg-gray-200 rounded-full font-bold text-lg hover:bg-gray-300">-</button>
-                                        <span className="text-lg w-10 text-center">{item.quantity}</span>
-                                        <button onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)} className="w-8 h-8 bg-gray-200 rounded-full font-bold text-lg hover:bg-gray-300">+</button>
-                                    </div>
-                                    <div className="text-right w-32">
-                                        <p className="text-lg font-semibold">${(discountedPrice * item.quantity).toFixed(2)}</p>
-                                        <button onClick={() => handleRemoveItem(item._id)} className="text-red-500 hover:text-red-700 mt-2 text-sm flex items-center gap-1 justify-end">
-                                            <FaTrashAlt /> Remove
-                                        </button>
+                                        
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-base sm:text-lg font-bold text-green-600">${discountedPrice.toFixed(2)}</p>
+                                            {discount > 0 && (<p className="text-xs text-gray-400 line-through">${originalPrice.toFixed(2)}</p>)}
+                                        </div>
+
+                                        <div className="flex items-center justify-between mt-1">
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => handleUpdateQuantity(item._id, item.quantity - 1)} className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center cursor-pointer  bg-gray-200 rounded-full font-semibold text-sm hover:bg-gray-300">-</button>
+                                                <span className="text-base w-8 text-center font-medium">{item.quantity}</span>
+                                                <button onClick={() => handleUpdateQuantity(item._id, item.quantity + 1)} className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center cursor-pointer  bg-gray-200 rounded-full font-semibold text-sm hover:bg-gray-300">+</button>
+                                            </div>
+                                            <p className="text-sm sm:text-base font-semibold text-gray-800">
+                                                ${(discountedPrice * item.quantity).toFixed(2)}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
 
-                {/* Right Side: Order Summary */}
-                <div className="w-full lg:w-1/3">
-                    <div className="bg-white p-6 rounded-lg shadow-md sticky top-20">
-                        <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
-                        <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Total Items:</span>
-                            <span className="font-semibold">{cartItems.length}</span>
-                        </div>
-                        {totalDiscount > 0 && (
-                            <div className="flex justify-between mb-2 text-green-600">
-                                <span>You Saved:</span>
-                                <span className="font-semibold">- ${totalDiscount.toFixed(2)}</span>
+                    {/* Right Side: Order Summary */}
+                    <div className="w-full lg:w-1/3">
+                        <div className="bg-white p-6 rounded-lg shadow-sm border sticky top-24">
+                            <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800">Order Summary</h2>
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">Subtotal</span>
+                                    <span className="font-semibold text-gray-800">${(grandTotal + totalDiscount).toFixed(2)}</span>
+                                </div>
+                                {totalDiscount > 0 && (
+                                    <div className="flex justify-between text-green-600">
+                                        <span>Discount</span>
+                                        <span className="font-semibold">- ${totalDiscount.toFixed(2)}</span>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        <hr className="my-4" />
-                        <div className="flex justify-between mb-4">
-                            <span className="text-lg font-bold">Grand Total:</span>
-                            <span className="text-lg font-bold">${grandTotal.toFixed(2)}</span>
+                            <hr className="my-4" />
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-lg font-bold text-gray-800">Grand Total</span>
+                                <span className="text-xl font-bold text-gray-900">${grandTotal.toFixed(2)}</span>
+                            </div>
+                            <button 
+                            onClick={() => navigate("/products/checkout")}
+                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-base md:text-lg hover:bg-blue-700 transition-colors">
+                                Proceed to Checkout
+                            </button>
                         </div>
-                        <button 
-                        onClick={() => navigate("/products/checkout")}
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors">
-                            Proceed to Checkout
-                        </button>
                     </div>
                 </div>
             </div>
