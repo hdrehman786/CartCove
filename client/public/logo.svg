@@ -1,0 +1,35 @@
+<!-- Save this file as public/logo.svg -->
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="coveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;" />
+      <stop offset="100%" style="stop-color:#8b5cf6;" />
+    </linearGradient>
+  </defs>
+
+  <!-- The Cove Wave/Swoosh (Thicker and more dynamic) -->
+  <path d="M 10,50 C 25,20 75,25 90,60" 
+        fill="none" 
+        stroke="url(#coveGradient)" 
+        stroke-width="10" 
+        stroke-linecap="round" />
+
+  <!-- Shopping Cart Body (Thicker lines) -->
+  <path d="M 25,45 H 80 L 71,78 H 33 L 25,45 Z" 
+        fill="none" 
+        stroke="#1e293b" 
+        stroke-width="7" 
+        stroke-linejoin="round" 
+        stroke-linecap="round" />
+  
+  <!-- Line inside cart for detail -->
+  <path d="M 33,62 H 71"
+        fill="none"
+        stroke="#475569"
+        stroke-width="4"
+        stroke-linecap="round" />
+
+  <!-- Wheels (More prominent) -->
+  <circle cx="38" cy="88" r="6" fill="#1e293b" />
+  <circle cx="68" cy="88" r="6" fill="#1e293b" />
+</svg>
