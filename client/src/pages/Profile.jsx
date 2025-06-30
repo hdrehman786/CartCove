@@ -1,26 +1,122 @@
-
-
-import React from 'react'
-import { useSelector } from 'react-redux';
-import { FaRegUserCircle } from "react-icons/fa";
+"use client"
+import { useSelector } from "react-redux"
+import { FaRegUserCircle, FaUserEdit, FaMapMarkerAlt, FaSignOutAlt } from "react-icons/fa"
+import { BsBoxSeam, BsCart } from "react-icons/bs"
 
 const Profile = () => {
-    const user = useSelector(state => state.user);
-    console.log("user data",user);
+  const user = useSelector((state) => state.user)
+
+  const handleNavigate = (path) => {
+    console.log(`Navigating to: ${path}`)
+  }
+
+  const handleLogout = () => {
+    console.log("User logging out...")
+  }
+
   return (
-    <div className=' '>
-    <div className='w-20 h-20 bg-red-500 flex items-center justify-center rounded-full'>
-        {
-            user.avatar ? (
-                <img src={"https://res.cloudinary.com/dyjpecyav/image/upload/v1732125196/cld-sample.jpg"} alt={user.name} className='w-full h-full rounded-full object-cover object-center' />
-            ) : (
-                <FaRegUserCircle size={65}  />
-            )
-        }
-    </div>
-    <button className='border px-3 py-1 rounded-full mt-3 text-xs border-yellow-200 hover:bg-yellow-300 hover:border-yellow-400'>
-        change profile
-    </button>
+    <div className="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen p-4 flex items-start justify-center">
+      <div className="max-w-md md:max-w-2xl lg:max-w-4xl w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 border border-slate-200">
+        {/* Header with gradient background */}
+        <div className="relative">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 h-20"></div>
+          <div className="px-6 pb-6 -mt-8">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6">
+              <div className="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20 bg-white border-4 border-white rounded-full shadow-lg overflow-hidden">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar || "/placeholder.svg"}
+                    alt={user.name || "User Avatar"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                    <FaRegUserCircle size={32} className="text-white md:text-4xl" />
+                  </div>
+                )}
+              </div>
+              <div className="text-center md:text-left flex-1 mt-4 md:mt-0">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{user.name || "User Name"}</h2>
+                <p className="text-sm md:text-base text-gray-600">{user.email || "user.email@example.com"}</p>
+                <p className="text-xs md:text-sm text-gray-500 mt-1">Welcome back to your account</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pb-4 md:pb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 md:gap-4">
+            <button
+              onClick={() => handleNavigate("/profile/edit")}
+              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
+            >
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                <FaUserEdit size={20} className="text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <span className="font-medium">Change Profile Picture</span>
+                <p className="text-xs text-gray-500 mt-0.5">Update your profile picture</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleNavigate("/orders")}
+              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
+            >
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                <BsBoxSeam size={20} className="text-green-600" />
+              </div>
+              <div className="flex-1">
+                <span className="font-medium">My Orders</span>
+                <p className="text-xs text-gray-500 mt-0.5">Track your order history</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleNavigate("/cart")}
+              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
+            >
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                <BsCart size={20} className="text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <span className="font-medium">My Cart</span>
+                <p className="text-xs text-gray-500 mt-0.5">View items in your cart</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleNavigate("/address")}
+              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
+            >
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                <FaMapMarkerAlt size={20} className="text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <span className="font-medium">Address</span>
+                <p className="text-xs text-gray-500 mt-0.5">Manage shipping addresses</p>
+              </div>
+            </button>
+          </div>
+
+          <div className="px-6 py-3">
+            <div className="border-t border-gray-200"></div>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-red-600 hover:bg-red-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-red-100 md:hover:border-red-200 md:hover:shadow-md mt-4"
+          >
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+              <FaSignOutAlt size={20} className="text-red-600" />
+            </div>
+            <div className="flex-1">
+              <span className="font-medium">Logout</span>
+              <p className="text-xs text-red-500 mt-0.5">Sign out of your account</p>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
