@@ -9,7 +9,7 @@ const Footer = () => {
                 <p>© All Right Reserved 2025</p>
 
 
-                <div className=" flex justify-center items-center gap-4 text-2xl">
+                <div className="flex justify-center items-center gap-4 text-2xl">
                     <a href="" className=" hover:text-[#ffb100]">
                         <FaFacebook />
                     </a>

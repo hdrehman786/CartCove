@@ -1,18 +1,80 @@
-"use client"
-import { useSelector } from "react-redux"
-import { FaRegUserCircle, FaUserEdit, FaMapMarkerAlt, FaSignOutAlt } from "react-icons/fa"
-import { BsBoxSeam, BsCart } from "react-icons/bs"
+"use client";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  FaRegUserCircle,
+  FaUserEdit,
+  FaMapMarkerAlt,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { BsBoxSeam, BsCart } from "react-icons/bs";
+import { toast } from "react-toastify";
+import uploadImage from "../utils/uploadImage";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import SummaryApi from "../common/SummaryApis";
+import GetUserDetails from "../utils/Userdetails";
+import { logout, settUserDetails } from "../store/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const user = useSelector((state) => state.user)
+  const user = useSelector((state) => state.user);
+  const [file, setFile] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleNavigate = (path) => {
-    console.log(`Navigating to: ${path}`)
+
+  const fetchUser = async () => {
+    const user = await GetUserDetails();
+    dispatch(settUserDetails(user));
   }
 
-  const handleLogout = () => {
-    console.log("User logging out...")
-  }
+  const handleChangeProfilePicture = async () => {
+    try {
+      const response = await uploadImage(file);
+      if (response?.data?.url) {
+        const updatedUser = await axios({
+          ...SummaryApi.updateprofilepicture,
+          data: {
+            url: response.data.url,
+            _id: user._id,
+          }
+        })
+        toast.success("Profile picture updated successfully!");
+        fetchUser();
+      } else {
+        toast.error("Failed to update profile picture");
+      }
+    } catch (error) {
+      toast.error("Error changing profile picture");
+    }
+  };
+
+  useEffect(() => {
+    if (file) handleChangeProfilePicture();
+  }, [file]);
+
+  const handleLogout = async () => {
+    try {
+      const response = await axios({
+        ...SummaryApi.logout,
+        withCredentials: true, // Ensure cookies are sent with the request
+      });
+
+      if (response.data.success) {
+        dispatch(logout());
+        localStorage.clear();
+        toast.success(response.data.message);
+        window.history.back();
+      }
+    } catch (error) {
+      console.log(error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Logout failed.';
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen p-4 flex items-start justify-center">
@@ -36,9 +98,15 @@ const Profile = () => {
                 )}
               </div>
               <div className="text-center md:text-left flex-1 mt-4 md:mt-0">
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{user.name || "User Name"}</h2>
-                <p className="text-sm md:text-base text-gray-600">{user.email || "user.email@example.com"}</p>
-                <p className="text-xs md:text-sm text-gray-500 mt-1">Welcome back to your account</p>
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+                  {user.name || "User Name"}
+                </h2>
+                <p className="text-sm md:text-base text-gray-600">
+                  {user.email || "user.email@example.com"}
+                </p>
+                <p className="text-xs md:text-sm text-gray-500 mt-1">
+                  Welcome back to your account
+                </p>
               </div>
             </div>
           </div>
@@ -46,9 +114,10 @@ const Profile = () => {
 
         <div className="pb-4 md:pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 md:gap-4">
-            <button
-              onClick={() => handleNavigate("/profile/edit")}
-              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
+            {/* Change Profile Picture - Using <label> to trigger file input */}
+            <label
+              htmlFor="profile-picture"
+              className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md cursor-pointer"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                 <FaUserEdit size={20} className="text-blue-600" />
@@ -57,10 +126,18 @@ const Profile = () => {
                 <span className="font-medium">Change Profile Picture</span>
                 <p className="text-xs text-gray-500 mt-0.5">Update your profile picture</p>
               </div>
-            </button>
+            </label>
+
+            <input
+              type="file"
+              id="profile-picture"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="hidden"
+            />
 
             <button
-              onClick={() => handleNavigate("/orders")}
+              onClick={() => handleNavigate("/dashboard/myorder")}
               className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -73,7 +150,7 @@ const Profile = () => {
             </button>
 
             <button
-              onClick={() => handleNavigate("/cart")}
+              onClick={() => handleNavigate("/products/mycart")}
               className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
@@ -86,7 +163,7 @@ const Profile = () => {
             </button>
 
             <button
-              onClick={() => handleNavigate("/address")}
+              onClick={() => handleNavigate("/dashboard/address")}
               className="w-full flex items-center gap-4 px-6 py-4 md:py-6 text-left text-gray-700 hover:bg-slate-50 transition-all duration-200 focus:outline-none group rounded-xl md:border md:border-gray-100 md:hover:border-gray-200 md:hover:shadow-md"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
@@ -118,7 +195,7 @@ const Profile = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

@@ -119,9 +119,17 @@ const SummaryApi = {
         url: `${baseUrl}/order/place`,
         method: "POST"
     },
+    placeOrderOnline: {
+        url: `${baseUrl}/order/placeonline`,
+        method: "POST"
+    },
     getorderhistory: {
         url: `${baseUrl}/order/get`,
         method: "POST"
+    },
+    updateprofilepicture : {
+        url: `${baseUrl}/auth/updateprofilepicture`,
+        method: "PUT"
     },
 
 }

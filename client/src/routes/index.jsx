@@ -1,4 +1,4 @@
-import { createBrowserRouter} from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 
 import SearchPage from '../pages/SearchPage';
@@ -21,103 +21,108 @@ import ProductDetailPage from '../pages/ProductDetailPage';
 import ProductShowDetails from '../components/ProductDetails';
 import MyCart from '../pages/MyCart';
 import CheckoutPage from '../pages/Checkoutpage';
+import PaymentSuccess from '../components/paymentsuccess';
 
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        children : [
+        children: [
+            {
+                path: "",
+                element: <Home />
+            },
+            {
+                path: 'search',
+                element: <SearchPage />
+            },
+            {
+                path: "login",
+                element: <Login />
+            },
+            {
+                path: 'register',
+                element: <Register />
+            },
+            {
+                path: 'forgot-password',
+                element: <ForgotPassword />
+            },
+            {
+                path: 'reset-otp',
+                element: <ResetOtp />
+            },
+            {
+                path: 'reset-password',
+                element: <UpdatePassword />
+            },
+            {
+                path: 'user-menue',
+                element: <UserMenuePage />
+            },
+            {
+                path: '/dashboard',
+                element: <Dashboard />,
+                children: [
+                    {
+                        path: 'category',
+                        element: <Category />
+                    },
+                    {
+                        path: 'subcategory',
+                        element: <SubCategory />
+                    },
+                    {
+                        path: 'upload-product',
+                        element: <UploadProduct />
+                    },
+                    {
+                        path: 'products-admin',
+                        element: <ProductsAdmin />
+                    },
+                    {
+                        path: 'profile',
+                        element: <Profile />
+                    },
+                    {
+                        path: 'myorder',
+                        element: <Myorder />
+                    },
+                    {
+                        path: "address",
+                        element: <Address />
+                    }
+                ]
+            },
+            {
+                path: "/payment-success",
+                element: <PaymentSuccess />
+            },
         {
-            path: "",
-            element: <Home />
-        },
-        {
-            path: 'search',
-           element: <SearchPage />
-        },
-        {
-        path:"login",
-        element:<Login />
-        },
-        {
-            path: 'register',
-            element: <Register />
-        },
-        {
-            path: 'forgot-password',
-            element: <ForgotPassword />
-        },
-        {
-            path: 'reset-otp',
-            element: <ResetOtp />
-        },
-        {
-            path: 'reset-password',
-            element: <UpdatePassword />
-        },
-        {
-            path: 'user-menue',
-            element: <UserMenuePage />
-        },
-        {
-            path: '/dashboard',
-            element: <Dashboard />,
-            children: [
-                {
-                    path: 'category',
-                    element: <Category />
-                },
-                {
-                    path: 'subcategory',
-                    element: <SubCategory />
-                },
-                {
-                    path: 'upload-product',
-                    element: <UploadProduct />
-                },
-                {
-                    path: 'products-admin',
-                    element: <ProductsAdmin />
-                },
-                {
-                    path: 'profile',
-                    element: <Profile />
-                },
-                {
-                    path: 'myorder',
-                    element: <Myorder />
-                },
-                {
-                    path: "address",
-                    element: <Address />
-                }
-            ]
-        },
-        {
-            path : ":category",
-            children : [
-                {
-                    path : ":subCategory",
-                    element : <ProductDetailPage />
-                }
-            ]
-        },
-        {
-            path : "/products/:product",
-            element :<ProductShowDetails />
-        },
-        {
-            path : "/products/mycart",
-            element : <MyCart />
-        },
-        {
-            path : "/products/checkout",
-            element : <CheckoutPage />
-        }
+                path: ":category",
+                children: [
+                    {
+                        path: ":subCategory",
+                        element: <ProductDetailPage />
+                    }
+                ]
+            },
+            {
+                path: "/products/:product",
+                element: <ProductShowDetails />
+            },
+            {
+                path: "/products/mycart",
+                element: <MyCart />
+            },
+            {
+                path: "/products/checkout",
+                element: <CheckoutPage />
+            }
         ]
     }
-   
+
 ])
 
 

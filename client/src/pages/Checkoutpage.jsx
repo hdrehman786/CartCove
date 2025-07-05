@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common/SummaryApis';
 import { FaMapMarkerAlt, FaCreditCard, FaMoneyBillWave, FaCheckCircle } from 'react-icons/fa';
+import { loadStripe } from '@stripe/stripe-js';
 
 const PaymentModal = ({ onClose, onSubmit }) => {
     const [cardInfo, setCardInfo] = useState({ number: '', expiry: '', cvv: '' });
@@ -15,11 +16,14 @@ const PaymentModal = ({ onClose, onSubmit }) => {
         setCardInfo(prev => ({ ...prev, [name]: value }));
     };
 
+
+
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
         if (!cardInfo.number || !cardInfo.expiry || !cardInfo.cvv) {
             return toast.error("Please fill all card details");
         }
+
         setIsPaying(true);
         await new Promise(resolve => setTimeout(resolve, 1500));
         setIsPaying(false);
@@ -156,7 +160,7 @@ const CheckoutPage = () => {
                 subTotal: grandTotal,
                 total: grandTotal
             };
-            
+
 
             const response = await axios({
                 ...SummaryApi.placeOrderCOD,
@@ -171,6 +175,37 @@ const CheckoutPage = () => {
             toast.error(error?.response?.data?.message || "Failed to place order.");
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+
+
+    const handleCheckout = async () => {
+        try {
+            if(!selectedAddressId) return toast.error("Please select a shipping address.");
+            const stripe = await loadStripe('pk_test_51RgUXTRSMYc4606L3AEbzvmxm5CckVUKQZekSPDlYqnw1kOadJi9t7CgChrUHxUPklW7uZSOMkSh93UCujX23xam00KXNfoiEL');
+
+
+            const orderDetails = {
+                userId,
+                delivery_address: selectedAddressId,
+                products: cartItems
+                }
+
+            const response = await axios({
+                ...SummaryApi.placeOrderOnline,
+               data : orderDetails,
+                }
+            );
+
+            if (response.data.success) {
+                await stripe.redirectToCheckout({ sessionId: response.data.sessionId });
+            } else {
+                toast.error("Failed to create Stripe session.");
+            }
+        } catch (err) {
+            console.error("Checkout Error:", err.message);
+            toast.error("An error occurred during checkout.");
         }
     };
 
@@ -282,13 +317,27 @@ const CheckoutPage = () => {
                             <span className="text-lg font-bold">Grand Total:</span>
                             <span className="text-lg font-bold text-blue-600">${grandTotal.toFixed(2)}</span>
                         </div>
-                        <button
-                            onClick={handlePlaceOrder}
-                            disabled={isProcessing}
-                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
-                        >
-                            {isProcessing ? 'Processing...' : `Place Order (${paymentMethod === 'cod' ? 'COD' : 'Pay Now'})`}
-                        </button>
+                        {
+                            paymentMethod === 'cod' ? (
+                                <button
+                                    onClick={handlePlaceOrder}
+                                    disabled={isProcessing}
+                                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+                                >
+                                    {isProcessing ? 'Processing...' : `Place Order`}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={()=>handleCheckout()}
+                                    disabled={isProcessing}
+                                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+                                >
+                                    {isProcessing ? 'Processing...' :  'Pay Now'}
+                                </button>
+
+                            )
+
+                        }
                     </div>
                 </div>
             </div>
