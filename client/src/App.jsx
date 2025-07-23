@@ -56,6 +56,7 @@ const App = () => {
     <>
       <Header />
       <main className=' min-h-[78vh] bg-gray-100 '>
+      <h1></h1>
         <Outlet />
         <Link to={"/products/mycart"} className="fixed bottom-5 right-5 z-50 md:hidden bg-green-500 text-white p-3 rounded-full shadow-2xl hover:bg-green-600 hover:scale-110 transition-all duration-300 ease-in-out group">
           <BsCart4 size={24} className="group-hover:rotate-6 transition-transform duration-300" />

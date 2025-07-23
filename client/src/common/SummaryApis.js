@@ -1,8 +1,8 @@
 
 
-export const baseUrl = 'https://server-cart-cove.vercel.app';
+// export const baseUrl = 'https://server-cart-cove.vercel.app';
 
-// export const baseUrl = 'http://localhost:3000';
+export const baseUrl = 'http://localhost:3000';
 
 
 const SummaryApi = {
